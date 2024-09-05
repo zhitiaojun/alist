@@ -1,10 +1,8 @@
 name: SSH Task
 
 on:
-  # 定时执行 - 每天凌晨3点运行（UTC时间）
   schedule:
     - cron: '0 3 * * *'
-  # 手动执行
   workflow_dispatch:
 
 jobs:
@@ -27,7 +25,8 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H s2.serv00.com >> ~/.ssh/known_hosts
 
-          ssh -i ~/.ssh/id_rsa -p 22 user@s2.serv00.com << 'EOF'
+          # 强制分配一个伪终端（使用 -t）
+          ssh -t -i ~/.ssh/id_rsa -p 22 user@s2.serv00.com << 'EOF'
             cd ~/domains/alist/
             ./alist stop
             ./alist start
