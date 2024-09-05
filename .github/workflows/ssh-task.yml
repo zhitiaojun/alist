@@ -4,6 +4,7 @@ on:
   schedule:
     # 每天凌晨3点运行（UTC时间）
     - cron: '0 3 * * *'
+    workflow_dispatch:
 
 jobs:
   ssh_task:
