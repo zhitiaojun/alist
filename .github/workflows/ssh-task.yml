@@ -1,0 +1,32 @@
+name: SSH Task
+
+on:
+  schedule:
+    # 每天凌晨3点运行（UTC时间）
+    - cron: '0 3 * * *'
+
+jobs:
+  ssh_task:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install SSH Client
+      run: sudo apt-get install -y openssh-client
+
+    - name: SSH into Server and Execute Commands
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H s2.serv00.com >> ~/.ssh/known_hosts
+
+        ssh -i ~/.ssh/id_rsa -p 22 user@s2.serv00.com << 'EOF'
+          cd ~/domains/alist/
+          ./alist stop
+          ./alist start
+        EOF
